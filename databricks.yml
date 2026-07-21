@@ -1,0 +1,70 @@
+# Declarative Automation Bundle configuration for GitFlow Demo
+# More info: https://docs.databricks.com/en/dev-tools/bundles/settings.html
+
+bundle:
+  name: "gitflow"
+
+# Include all resource definitions
+include:
+  - resources/*.yml
+  - resources/*/*.yml
+
+# Variables used across all targets
+variables:
+  catalog:
+    description: "Unity Catalog name for the environment"
+  schema:
+    description: "Schema name for the environment"
+  notification_email:
+    description: "Email address for job failure notifications"
+  service_principal_name:
+    description: "Service principal client ID for run_as (injected via --var at deploy time from GitHub Secrets)"
+
+targets:
+  # Development environment - deploys on merge to 'develop' branch
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-2098490958867582.2.azuredatabricks.net
+    
+    # Dev-specific variables
+    variables:
+      catalog: poc_cicd
+      schema: gitflow_dev
+      notification_email: ansh_tripathi@v4ctscoutlook.onmicrosoft.com
+      # service_principal_name injected via: --var service_principal_name=<value>
+  
+  # Staging environment - deploys on merge to 'release/*' branches
+  staging:
+    mode: production
+    workspace:
+      host: https://adb-2098490958867582.2.azuredatabricks.net
+      root_path: /Users/ansh_tripathi@v4ctscoutlook.onmicrosoft.com/.bundle/${bundle.name}/${bundle.target}
+    
+    # Staging-specific variables
+    variables:
+      catalog: poc_cicd
+      schema: gitflow_staging
+      notification_email: ansh_tripathi@v4ctscoutlook.onmicrosoft.com
+      # service_principal_name injected via: --var service_principal_name=<value>
+    
+    run_as:
+      service_principal_name: ${var.service_principal_name}
+
+  # Production environment - deploys on merge to 'main' branch
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-2098490958867582.2.azuredatabricks.net
+      root_path: /Users/ansh_tripathi@v4ctscoutlook.onmicrosoft.com/.bundle/${bundle.name}/${bundle.target}
+    
+    # Production-specific variables
+    variables:
+      catalog: poc_cicd
+      schema: gitflow_prod
+      notification_email: ansh_tripathi@v4ctscoutlook.onmicrosoft.com
+      # service_principal_name injected via: --var service_principal_name=<value>
+    
+    run_as:
+      service_principal_name: ${var.service_principal_name}
