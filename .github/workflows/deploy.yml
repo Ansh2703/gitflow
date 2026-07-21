@@ -143,7 +143,8 @@ jobs:
       - name: Run DEV Pipeline
         run: |
           echo "▶️ Running medallion ETL job in DEV..."
-          databricks bundle run medallion_etl_job --target dev
+          databricks bundle run medallion_etl_job --target dev \
+            --var service_principal_name=${{ secrets.ARM_CLIENT_ID }}
       
       - name: DEV Deployment Success
         run: |
@@ -186,7 +187,8 @@ jobs:
       - name: Run STAGING Pipeline
         run: |
           echo "▶️ Running medallion ETL job in STAGING..."
-          databricks bundle run medallion_etl_job --target staging
+          databricks bundle run medallion_etl_job --target staging \
+            --var service_principal_name=${{ secrets.ARM_CLIENT_ID }}
       
       - name: STAGING Deployment Success
         run: |
@@ -230,7 +232,8 @@ jobs:
       - name: Run PROD Pipeline
         run: |
           echo "▶️ Running medallion ETL job in PRODUCTION..."
-          databricks bundle run medallion_etl_job --target prod
+          databricks bundle run medallion_etl_job --target prod \
+            --var service_principal_name=${{ secrets.ARM_CLIENT_ID }}
       
       - name: Tag Release
         if: success()
